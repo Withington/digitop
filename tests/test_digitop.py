@@ -1,3 +1,4 @@
+"""Test the digitop functions."""
 import unittest
 
 from .context import digitop
