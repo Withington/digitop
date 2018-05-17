@@ -1,0 +1,10 @@
+# Python Tools for Visual Studio (PTVS)
+__pycache__/
+*.pyc
+
+# Visual Studio solution and project files
+*.pyproj
+*.sln
+
+# virtualenv
+/machine_learning_venv/

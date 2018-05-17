@@ -4,11 +4,12 @@ import unittest
 
 
 class BasicTestSuite(unittest.TestCase):
-    """Basic test cases."""
 
     def test_smoke(self):
-      print(digitop.digimodel())
       assert digitop.digimodel() == "Hello model"
+
+    def test_tensorflow(self):
+      assert digitop.run_tensorflow().decode('utf8') == "Hello TensorFlow"
 
 
 if __name__ == '__main__':
