@@ -10,6 +10,6 @@ class BasicTestSuite(unittest.TestCase):
         """Test TensorFlow session."""
         assert digitop.run_tensorflow().decode('utf8') == "Hello TensorFlow"
 
-
 if __name__ == '__main__':
     unittest.main()
+
