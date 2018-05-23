@@ -1,10 +1,11 @@
 """Top level calls to TensorFlow and Keras."""
+import subprocess
+
 import tensorflow as tf
 
 from keras.models import Sequential
 from keras.layers import Dense
 
-import subprocess
 
 def run_tensorflow():
     """Run a simple TensorFlow session.
@@ -26,14 +27,13 @@ def build_keras_model():
     return model.count_params()
 
 def version():
-    """Return the version number defined in the git repo. Or the last commit date if there is no version number."""
+    """Return the version number defined in the git repo. Or the last commit 
+    date if there is no version number."""
     try:
         version_number = subprocess.check_output(['git', 'describe', '--exact-match'])
     except:
-        try:
-            version_number = subprocess.check_output(['git', 'log', '-1', '--format=%cd', '--date=local'])
-        except:
-            version_number = None
+        version_number = subprocess.check_output(['git', 'log', '-1', 
+                                                      '--format=%cd', '--date=local'])
     return version_number
 
 
