@@ -24,9 +24,7 @@ install:
   # install TensorFlow (CPU version).
   - pip install tensorflow
   # install pydot for visualization tests
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-      conda install pydot graphviz;
-    fi
+  conda install pydot graphviz;
   
   - pip install -r requirements.txt
   - pip install coveralls
