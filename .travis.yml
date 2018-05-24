@@ -17,12 +17,10 @@ install:
   - conda update -q conda
   - conda info -a # Useful for debugging any issues with conda
   
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy nose scipy matplotlib pandas pytest h5py
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy h5py
   - source activate test-environment
   # set library path
   - export LD_LIBRARY_PATH=$HOME/miniconda/envs/test-environment/lib/:$LD_LIBRARY_PATH 
-  # install TensorFlow (CPU version).
-  - pip install tensorflow
   # install pydot for visualization tests
   - conda install pydot 
   - conda install python-graphviz
