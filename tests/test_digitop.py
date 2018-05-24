@@ -1,5 +1,6 @@
 """Test the digitop functions."""
 import unittest
+import pydot
 
 from .context import digitop
 
@@ -27,6 +28,12 @@ class BasicTestSuite(unittest.TestCase):
         print(score)
         accuracy = score[1]
         self.assertGreater(accuracy, 0.04)
+
+    def test_graphviz(self):
+        # Attempt to create an image of a blank graph
+        # to check the pydot/graphviz installation.
+        pydot.Dot.create(pydot.Dot())
+        assert True
 
 if __name__ == '__main__':
     unittest.main()
