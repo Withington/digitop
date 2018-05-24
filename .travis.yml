@@ -24,7 +24,7 @@ install:
   # install TensorFlow (CPU version).
   - pip install tensorflow
   # install pydot for visualization tests
-  conda install pydot graphviz;
+  - conda install pydot graphviz
   
   - pip install -r requirements.txt
   - pip install coveralls
