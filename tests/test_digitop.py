@@ -30,8 +30,8 @@ class BasicTestSuite(unittest.TestCase):
         self.assertGreater(accuracy, 0.04)
 
     def test_graphviz(self):
-        # Attempt to create an image of a blank graph
-        # to check the pydot/graphviz installation.
+        """ Test the pydot/graphviz installation by attempting
+        to create an image of a blank graph."""
         pydot.Dot.create(pydot.Dot())
         assert True
 
