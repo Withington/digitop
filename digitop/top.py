@@ -6,6 +6,7 @@ import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense
 
+from digitop import classifier
 
 def run_tensorflow():
     """Run a simple TensorFlow session.
@@ -36,6 +37,10 @@ def version():
                                                       '--format=%cd', '--date=local'])
     return version_number
 
+def run_and_plot():
+    """Run the model and plot its training."""
+    score, history = classifier.evaluate_classifier()
+    classifier.plot_history(history)
 
 if __name__ == "__main__":
     import doctest

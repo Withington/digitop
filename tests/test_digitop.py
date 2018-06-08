@@ -2,7 +2,7 @@
 import unittest
 import pydot
 
-from .context import digitop
+from tests.context import digitop
 
 class BasicTestSuite(unittest.TestCase):
     """Basic test cases."""
@@ -21,9 +21,8 @@ class BasicTestSuite(unittest.TestCase):
         assert digitop.build_keras_model() == 16*32+16
 
     def test_classifier(self):
-        """Test the classifier Keras neural network.
-        It doesn't give good accuracy but this tests that it runs."""
-        score = digitop.classifier()
+        """Test the classification model."""
+        score, __ = digitop.evaluate_classifier()
         print("Score is ")
         print(score)
         accuracy = score[1]
@@ -31,7 +30,11 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_graphviz(self):
         """ Test the pydot/graphviz installation by attempting
-        to create an image of a blank graph."""
+        to create an image of a blank graph.
+        This test may fail on Windows (Message: [WinError 2] "dot.exe" 
+        not found in path). To have it work on Windows add it to the path. E.g.
+        os.environ["PATH"] += os.pathsep + 'C:/.../Anaconda3/envs/.../Library/bin/graphviz').
+        """
         pydot.Dot.create(pydot.Dot())
         assert True
 

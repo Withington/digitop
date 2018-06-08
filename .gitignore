@@ -8,3 +8,6 @@ __pycache__/
 
 # virtualenv
 /machine_learning_venv/
+
+# Project specific
+test_local.py
