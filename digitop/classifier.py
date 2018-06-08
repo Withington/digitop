@@ -5,10 +5,11 @@ import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import SGD, Adam
+from keras.callbacks import TensorBoard
 
 import matplotlib.pyplot as plt
 
-from keras.callbacks import TensorBoard
+
 
 def evaluate_classifier():
     """Multilayer Perceptron (MLP) for multi-class softmax classification."""
@@ -35,15 +36,15 @@ def evaluate_classifier():
     tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0,
                           write_graph=True, write_images=False)
     history = model.fit(x_train, y_train,
-                  epochs=20,
-                  batch_size=128,
-                  callbacks = [tensorboard])
+                epochs=20,
+                batch_size=128,
+                callbacks=[tensorboard])
 
     score = model.evaluate(x_test, y_test, batch_size=128)
     return score, history
 
 def plot_history(history):
-    """Plot the accuracy and loss during training."""    
+    """Plot the accuracy and loss during training."""
     # summarize history for accuracy
     plt.plot(history.history['acc'])
     plt.title('model accuracy')

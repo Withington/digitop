@@ -31,7 +31,7 @@ class BasicTestSuite(unittest.TestCase):
     def test_graphviz(self):
         """ Test the pydot/graphviz installation by attempting
         to create an image of a blank graph.
-        This test may fail on Windows (Message: [WinError 2] "dot.exe" 
+        This test may fail on Windows (Message: [WinError 2] "dot.exe"
         not found in path). To have it work on Windows add it to the path. E.g.
         os.environ["PATH"] += os.pathsep + 'C:/.../Anaconda3/envs/.../Library/bin/graphviz').
         """
