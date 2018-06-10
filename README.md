@@ -8,4 +8,4 @@ Classifier model.
 Writes log files for TensorBoard visualisation.
 
 Documentation is generated using Sphinx.
-Automated build and test is performed by Travis-CI.
+Automated build and test is performed by Travis-CI. 
