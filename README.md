@@ -6,3 +6,5 @@
 # Digitop : Machine Learning
 Classifier model.
 Writes log files for TensorBoard visualisation.
+
+Documentation is generated using Sphinx.
