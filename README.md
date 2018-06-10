@@ -4,6 +4,5 @@
 [![Documentation Status](https://readthedocs.org/projects/digitop/badge/?version=latest)](http://digitop.readthedocs.io/en/latest/?badge=latest)
 
 # Digitop : Machine Learning
-
-
-
+Classifier model.
+Writes log files for TensorBoard visualisation.
