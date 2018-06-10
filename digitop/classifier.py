@@ -36,9 +36,9 @@ def evaluate_classifier():
     tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0,
                           write_graph=True, write_images=False)
     history = model.fit(x_train, y_train,
-                epochs=20,
-                batch_size=128,
-                callbacks=[tensorboard])
+                        epochs=20,
+                        batch_size=128,
+                        callbacks=[tensorboard])
 
     score = model.evaluate(x_test, y_test, batch_size=128)
     return score, history

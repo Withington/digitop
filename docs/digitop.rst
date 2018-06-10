@@ -1,5 +1,5 @@
-Digitop Module
-===================
+Digitop Documentation
+================================
 
 Check that TensorFlow is running.
 
