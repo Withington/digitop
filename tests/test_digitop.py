@@ -26,7 +26,7 @@ class BasicTestSuite(unittest.TestCase):
         print("Score is ")
         print(score)
         accuracy = score[1]
-        self.assertGreater(accuracy, 0.04)
+        self.assertGreater(accuracy, 0.60)
 
     def test_graphviz(self):
         """ Test the pydot/graphviz installation by attempting
