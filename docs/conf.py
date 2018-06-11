@@ -19,12 +19,16 @@ sys.path.insert(0, os.path.abspath('../machine_learning_venv\Lib\site-packages')
 
 
 # -- Mock modules -----------------------------------------------------
-import mock
- 
-MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate', 'tensorflow']
-for mod_name in MOCK_MODULES:
-	sys.modules[mod_name] = mock.Mock()
+#import sys
+#from unittest.mock import MagicMock
 
+#class Mock(MagicMock):
+#    @classmethod
+#    def __getattr__(cls, name):
+#        return MagicMock()
+
+#MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate', 'tensorflow', 'keras']
+#sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # -- Project information -----------------------------------------------------
 
@@ -33,9 +37,9 @@ copyright = '2018, Withington'
 author = 'Withington'
 
 # The short X.Y version
-version = ''
+version = '0.0'
 # The full version, including alpha/beta/rc tags
-release = 'latest'
+release = '0.0.1'
 
 
 # -- General configuration ---------------------------------------------------
