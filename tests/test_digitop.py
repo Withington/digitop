@@ -38,5 +38,18 @@ class BasicTestSuite(unittest.TestCase):
         pydot.Dot.create(pydot.Dot())
         assert True
 
+
+        
+    def test_iris_classifier(self):
+        """Test the classification model."""
+        accuracy = digitop.iris_classifier()
+        self.assertGreater(accuracy, 0.90)
+
+    def test_load_model(self):
+        """Test the loading of the classification model."""
+        accuracy = digitop.load_iris_model()
+        self.assertGreater(accuracy, 0.90)
+
+
 if __name__ == '__main__':
     unittest.main()
