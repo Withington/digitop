@@ -17,7 +17,7 @@ install:
   - conda update -q conda
   - conda info -a # Useful for debugging any issues with conda
   
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy h5py pytest
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy h5py pytest scikit-learn seaborn
   - source activate test-environment
   # set library path
   - export LD_LIBRARY_PATH=$HOME/miniconda/envs/test-environment/lib/:$LD_LIBRARY_PATH 
