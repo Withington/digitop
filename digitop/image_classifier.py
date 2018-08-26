@@ -135,12 +135,9 @@ def image_classifier_harus():
     print('Running image_classifier_harus')
     np.random.seed(2)
 
-    # load pima indians dataset
-    n_inputs = 128
+    # load  dataset
     n_classes = 2
-
     dataset = np.loadtxt("./data/body_acc_x_train_v2.csv", delimiter=",")
-    #dataset = np.loadtxt("./data/pima-indians-diabetes.data.harus.csv", delimiter=",")
     print("dataset shape is ")
     print(dataset.shape)
 
@@ -150,7 +147,7 @@ def image_classifier_harus():
     # x needs to have shape (num_samples, image_height, image_width, channels); e.g. (n,1,128,1)
     X = X_input.reshape(X_input.shape[0],1,X_input.shape[1],1)
     print(X)
-    # y needs to have categories 0 and 1 so change category 4 to category 1.
+    # y needs to have categories 0 and 1 so change category 4 to category 0.
     y[y == 4.0] = 0.0
     x_train, x_test, y_train, y_test = \
         train_test_split(X, y, train_size=0.75, test_size=0.25, random_state=0)
@@ -174,7 +171,7 @@ def image_classifier_harus():
     accuracy_callback = [EarlyStopping(monitor='val_acc', patience=5, mode='max')]
 
     classifier.fit(x_train, y_train,
-        steps_per_epoch = 100, # 8000,
+        steps_per_epoch = 8000, # 8000,
         epochs = 25, # 25,
         callbacks = accuracy_callback,
         validation_data = (x_test, y_test),
@@ -189,7 +186,51 @@ def image_classifier_harus():
 
     classifier.save_weights(f'model_data/image_model_{tag}.h5')
 
+
+def load_and_test_harus():
+    print('Running load_and_test_harus')
+    model_name = 'image_model_2018-08-26_12-41'
+    # load model and compile
+    json_file = open(f'model_data/{model_name}.json', 'r')
+    json_model = json_file.read()
+    json_file.close()
+    loaded_model = model_from_json(json_model)
+    loaded_model.load_weights(f'model_data/{model_name}.h5')
+    loaded_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=["accuracy"])
+
+    # get test set
+    n_classes = 2
+    dataset = np.loadtxt("./data/body_acc_x_train_more_V2.csv", delimiter=",")
+    X_input = dataset[:, 1:]
+    y = dataset[:, 0]
+    # x needs to have shape (num_samples, image_height, image_width, channels); e.g. (n,1,128,1)
+    X = X_input.reshape(X_input.shape[0],1,X_input.shape[1],1)
+    # y needs to have categories 0 and 1 so change category 4 to category 0.
+    y[y == 4.0] = 0.0
+    y_test = keras.utils.to_categorical(y, num_classes=n_classes)
+
+    # select one test sample
+    X_test = X[3]
+    X_test = np.expand_dims(X_test, axis = 0)
+    result = loaded_model.predict(X_test).argmax(axis=-1)
+    if result[0] == 0:
+        prediction = 'Sitting'
+    elif result[0] == 1:
+        prediction = 'Walking'
+    else:
+        print('prediction is')
+        print(result[0][0])
+        prediction = 'Unknown category'
+    print (prediction)
+
+    # evaluation model
+    loss,accuracy = loaded_model.evaluate(X, y_test)
+    print("Accuracy = {:.2f}".format(accuracy))
+
+    return accuracy
+
 if __name__ == '__main__':
     #image_classifier()
     #load_and_test()
-    image_classifier_harus()
+    #image_classifier_harus()
+    load_and_test_harus()
