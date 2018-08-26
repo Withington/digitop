@@ -1,4 +1,4 @@
-"""An image classifier CNN."""
+'''An image classifier CNN.'''
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,7 +24,7 @@ from datetime import datetime
 
 from sklearn.model_selection import train_test_split
 
-from keep_local import dataset_dir # todo lmtw do config or remove
+import keep_local 
 
 def image_classifier():
     print('Running image_classifier')
@@ -48,7 +48,7 @@ def image_classifier():
 
     test_datagen = ImageDataGenerator(rescale = 1./255)
 
-    dataset_folder = dataset_dir()
+    dataset_folder = keep_local.dataset_dir()
     training_set = train_datagen.flow_from_directory(
         'dataset/training_set',
         target_size = (50, 50),
@@ -79,9 +79,9 @@ def image_classifier():
 
     # save model
     d = datetime.now()
-    tag = d.strftime("%Y-%m-%d_%H-%M")
+    tag = d.strftime('%Y-%m-%d_%H-%M')
     model_json = classifier.to_json()
-    with open(f'model_data/image_model_{tag}.json', "w+") as json_file:
+    with open(f'model_data/image_model_{tag}.json', 'w+') as json_file:
         json_file.write(model_json)
 
     classifier.save_weights(f'model_data/image_model_{tag}.h5')
@@ -97,8 +97,8 @@ def load_and_test():
     json_file.close()
     loaded_model = model_from_json(json_model)
     loaded_model.load_weights(f'model_data/{model_name}.h5')
-    #loaded_model.load_weights("saved_models/cnn_base_model.h5")
-    loaded_model.compile(optimizer='sgd', loss='binary_crossentropy', metrics=["accuracy"])
+    #loaded_model.load_weights('saved_models/cnn_base_model.h5')
+    loaded_model.compile(optimizer='sgd', loss='binary_crossentropy', metrics=['accuracy'])
 
     # get test set
     test_datagen = ImageDataGenerator(rescale = 1./255)
@@ -121,24 +121,24 @@ def load_and_test():
         prediction = 'Cat'
     print (prediction)
     loss,accuracy = loaded_model.evaluate_generator(test_set)
-    print("Accuracy = {:.2f}".format(accuracy))
+    print('Accuracy = {:.2f}'.format(accuracy))
 
     # visualise - plot model layers to file
     #import os # todo lmtw remove
-    #os.environ["PATH"] += os.pathsep + 'C:/Users/Lucy/Anaconda3/envs/machine_learning_conda/Library/bin/graphviz' # todo lmtw remove
+    #os.environ['PATH'] += os.pathsep + 'C:/Users/Lucy/Anaconda3/envs/machine_learning_conda/Library/bin/graphviz' # todo lmtw remove
     #plot_model(loaded_model, to_file='classifier.png')
 
     return accuracy
 
 def image_classifier_harus():
-    """Classify a small HARUS dataset. Two activities - 1 & 2, standing and walking upstairs."""
+    '''Classify a small HARUS dataset. Two activities - 1 & 2, standing and walking upstairs.'''
     print('Running image_classifier_harus')
     np.random.seed(2)
 
     # load  dataset
     n_classes = 2
-    dataset = np.loadtxt("./data/body_acc_x_train_v2.csv", delimiter=",")
-    print("dataset shape is ")
+    dataset = np.loadtxt('./data/body_acc_x_train_v2.csv', delimiter=',')
+    print('dataset shape is ')
     print(dataset.shape)
 
     # split into input (X) and output (Y) variables
@@ -164,7 +164,7 @@ def image_classifier_harus():
     classifier.add(MaxPooling2D(pool_size = (1, 2)))
     classifier.add(Flatten())
     classifier.add(Dense(units = 32, activation = 'relu'))
-    classifier.add(Dense(units = 2, activation = 'sigmoid'))
+    classifier.add(Dense(units = n_classes, activation = 'sigmoid'))
     classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
     # Stop training if val_acc does not improve after [patience] epochs.
@@ -179,9 +179,9 @@ def image_classifier_harus():
 
     # save model
     d = datetime.now()
-    tag = d.strftime("%Y-%m-%d_%H-%M")
+    tag = d.strftime('%Y-%m-%d_%H-%M')
     model_json = classifier.to_json()
-    with open(f'model_data/image_model_{tag}.json', "w+") as json_file:
+    with open(f'model_data/image_model_{tag}.json', 'w+') as json_file:
         json_file.write(model_json)
 
     classifier.save_weights(f'model_data/image_model_{tag}.h5')
@@ -196,11 +196,11 @@ def load_and_test_harus():
     json_file.close()
     loaded_model = model_from_json(json_model)
     loaded_model.load_weights(f'model_data/{model_name}.h5')
-    loaded_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=["accuracy"])
+    loaded_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
     # get test set
     n_classes = 2
-    dataset = np.loadtxt("./data/body_acc_x_train_more_V2.csv", delimiter=",")
+    dataset = np.loadtxt('./data/body_acc_x_train_more_V2.csv', delimiter=',')
     X_input = dataset[:, 1:]
     y = dataset[:, 0]
     # x needs to have shape (num_samples, image_height, image_width, channels); e.g. (n,1,128,1)
@@ -225,7 +225,132 @@ def load_and_test_harus():
 
     # evaluation model
     loss,accuracy = loaded_model.evaluate(X, y_test)
-    print("Accuracy = {:.2f}".format(accuracy))
+    print('Accuracy = {:.2f}'.format(accuracy))
+
+    return accuracy
+
+def load_raw_data(is_train):
+    name = 'train' if is_train else 'test'
+    print('loading data of type...')
+    print(name)
+    dir = keep_local.dataset_dir_harus()
+    filename = 'body_acc_x_' + name + '.txt'
+    p = dir / name / 'Inertial Signals' / filename
+    X_input = np.loadtxt(str(p))
+    print(X_input)
+    print('now one elment')
+    print(X_input[0][0])
+    # load y
+    #p = dir / 'train/y_train.txt'
+    filename = 'y_' + name + '.txt'
+    p = dir / name / filename
+    Y_input = np.loadtxt(str(p))
+    print(Y_input)
+    # x needs to have shape (num_samples, image_height, image_width, channels); e.g. (n,1,128,1)
+    X = X_input.reshape(X_input.shape[0],1,X_input.shape[1],1)
+    # y needs to have categories 0 to 5 instead of 1 to 6 so change category 6 to category 0.
+    Y_input[Y_input == 6.0] = 0.0
+    print('X shape is ')
+    print(X.shape)
+    print('Y_input shape is ')
+    print(Y_input.shape)
+    return X, Y_input
+
+
+def image_classifier_harus_full():
+    '''Classify the HARUS dataset.'''
+    print('Running image_classifier_harus_full')
+    n_classes = 6
+    np.random.seed(2)
+
+    # load  dataset
+    X, Y = load_raw_data(True)
+
+    x_train, x_test, y_train, y_test = \
+        train_test_split(X, Y, train_size=0.75, test_size=0.25, random_state=0)
+
+    # convert to one-hot data
+    y_train = keras.utils.to_categorical(y_train, num_classes=n_classes)
+    y_test = keras.utils.to_categorical(y_test, num_classes=n_classes)
+
+     # Build a CNN.
+    classifier = Sequential()
+    classifier.add(Conv2D(32, (1, 3), input_shape = (1, 128, 1), activation = 'relu'))
+    classifier.add(MaxPooling2D(pool_size = (1, 2)))
+    classifier.add(Conv2D(64, (1, 3), activation = 'relu'))
+    classifier.add(MaxPooling2D(pool_size = (1, 2)))
+    classifier.add(Flatten())
+    classifier.add(Dense(units = 32, activation = 'relu'))
+    classifier.add(Dense(units = n_classes, activation = 'sigmoid'))
+    classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+    # Stop training if val_acc does not improve after [patience] epochs.
+    accuracy_callback = [EarlyStopping(monitor='val_acc', patience=5, mode='max')]
+
+    classifier.fit(x_train, y_train,
+        steps_per_epoch = 10, # 8000,
+        epochs = 2, # 25,
+        callbacks = accuracy_callback,
+        validation_data = (x_test, y_test),
+        validation_steps = 2000)
+
+    # save model
+    d = datetime.now()
+    tag = d.strftime('%Y-%m-%d_%H-%M')
+    model_json = classifier.to_json()
+    with open(f'model_data/image_model_{tag}.json', 'w+') as json_file:
+        json_file.write(model_json)
+
+    classifier.save_weights(f'model_data/image_model_{tag}.h5')
+
+def get_category(index):
+    if index == 0:
+        category = 'Laying'
+    elif index == 1:
+        category = 'Walking'
+    elif index == 2:
+        category = 'Walking upstairs'
+    elif index == 3:
+        category = 'Walking downstairs'
+    elif index == 4:
+        category = 'Sitting'
+    elif index == 5:
+        category = 'Standing'
+    else:
+        category = 'Unknown category'
+    return category
+
+def load_and_test_harus_full():
+    print('Running load_and_test_harus_full')
+    model_name = 'image_model_2018-08-26_18-07'
+    # load model and compile
+    json_file = open(f'model_data/{model_name}.json', 'r')
+    json_model = json_file.read()
+    json_file.close()
+    loaded_model = model_from_json(json_model)
+    loaded_model.load_weights(f'model_data/{model_name}.h5')
+    loaded_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+    # load  dataset
+    n_classes = 6
+    is_train = False # load training data or test data
+    X, Y = load_raw_data(is_train)
+    y_test = keras.utils.to_categorical(Y, num_classes=n_classes)
+
+    # select one test sample
+    for i in range(0,20):
+        rand = int(np.random.sample()*X.shape[0])
+        X_test = X[rand]
+        X_test = np.expand_dims(X_test, axis = 0)
+        result = loaded_model.predict(X_test)
+        print(result)
+        result = result.argmax(axis=-1)
+        print(result)
+        print(f'sample {rand} : prediction = {get_category(result[0])} : actual =  {get_category(Y[rand])}')
+
+    # evaluation model
+    loss,accuracy = loaded_model.evaluate(X, y_test)
+    print('Accuracy = {:.2f}'.format(accuracy))
 
     return accuracy
 
@@ -233,4 +358,7 @@ if __name__ == '__main__':
     #image_classifier()
     #load_and_test()
     #image_classifier_harus()
-    load_and_test_harus()
+    #load_and_test_harus()
+    #load_raw_data()
+    #image_classifier_harus_full()
+    load_and_test_harus_full()
