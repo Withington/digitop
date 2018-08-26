@@ -160,11 +160,11 @@ def load_iris_model():
     import keras.backend as K
 
     # load model and compile
-    json_file = open('model_data/iris_model.json', 'r')
+    json_file = open('model_data/iris_model_azure.json', 'r')
     json_model = json_file.read()
     json_file.close()
     loaded_model = model_from_json(json_model)
-    loaded_model.load_weights("model_data/iris_model.h5")
+    loaded_model.load_weights("model_data/iris_model_azure3.h5")
     loaded_model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=["accuracy"])
 
     # get dataset and test
