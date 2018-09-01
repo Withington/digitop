@@ -241,19 +241,21 @@ def load_raw_data(is_train):
     print('now one elment')
     print(X_input[0][0])
     # load y
-    #p = dir / 'train/y_train.txt'
     filename = 'y_' + name + '.txt'
     p = dir / name / filename
     Y_input = np.loadtxt(str(p))
-    print(Y_input)
-    # x needs to have shape (num_samples, image_height, image_width, channels); e.g. (n,1,128,1)
-    X = X_input.reshape(X_input.shape[0],1,X_input.shape[1],1)
     # y needs to have categories 0 to 5 instead of 1 to 6 so change category 6 to category 0.
     Y_input[Y_input == 6.0] = 0.0
-    print('X shape is ')
-    print(X.shape)
     print('Y_input shape is ')
     print(Y_input.shape)
+    return X_input, Y_input
+
+def load_and_process(is_train):
+    X_input, Y_input = load_raw_data(is_train)
+    # x needs to have shape (num_samples, image_height, image_width, channels); e.g. (n,1,128,1)
+    X = X_input.reshape(X_input.shape[0],1,X_input.shape[1],1)
+    print('X shape is ')
+    print(X.shape)
     return X, Y_input
 
 
@@ -264,7 +266,7 @@ def image_classifier_harus_full():
     np.random.seed(2)
 
     # load  dataset
-    X, Y = load_raw_data(True)
+    X, Y = load_and_process(True)
 
     x_train, x_test, y_train, y_test = \
         train_test_split(X, Y, train_size=0.75, test_size=0.25, random_state=0)
@@ -288,11 +290,11 @@ def image_classifier_harus_full():
     accuracy_callback = [EarlyStopping(monitor='val_acc', patience=5, mode='max')]
 
     classifier.fit(x_train, y_train,
-        steps_per_epoch = 10, # 8000,
-        epochs = 2, # 25,
+        steps_per_epoch = 500, # divide the training set in to this many batches. All samples in one batch are run in parallel.
+        epochs = 25, # 25,
         callbacks = accuracy_callback,
-        validation_data = (x_test, y_test),
-        validation_steps = 2000)
+        validation_data = (x_test, y_test), # some of the training data is used for validation instead.
+        validation_steps = 500)
 
     # save model
     d = datetime.now()
@@ -303,7 +305,7 @@ def image_classifier_harus_full():
 
     classifier.save_weights(f'model_data/image_model_{tag}.h5')
 
-def get_category(index):
+def get_category(index, is_not_folder = True):
     if index == 0:
         category = 'Laying'
     elif index == 1:
@@ -318,26 +320,33 @@ def get_category(index):
         category = 'Standing'
     else:
         category = 'Unknown category'
-    return category
+    if is_not_folder:
+        return category
+    else:
+        category.replace(' ', '_')
+        category.lower()
+        return category
 
 def load_and_test_harus_full():
     print('Running load_and_test_harus_full')
-    model_name = 'image_model_2018-08-26_18-07'
+    model_name = 'image_model_2018-09-01_15-56' #'image_model_2018-08-26_18-07'
     # load model and compile
     json_file = open(f'model_data/{model_name}.json', 'r')
     json_model = json_file.read()
     json_file.close()
     loaded_model = model_from_json(json_model)
     loaded_model.load_weights(f'model_data/{model_name}.h5')
-    loaded_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    loaded_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['categorical_accuracy'])
 
     # load  dataset
     n_classes = 6
     is_train = False # load training data or test data
-    X, Y = load_raw_data(is_train)
+    X, Y = load_and_process(is_train)
     y_test = keras.utils.to_categorical(Y, num_classes=n_classes)
 
-    # select one test sample
+    # select and test a few samples
+    n_correct = 0
+    total = 0
     for i in range(0,20):
         rand = int(np.random.sample()*X.shape[0])
         X_test = X[rand]
@@ -347,18 +356,43 @@ def load_and_test_harus_full():
         result = result.argmax(axis=-1)
         print(result)
         print(f'sample {rand} : prediction = {get_category(result[0])} : actual =  {get_category(Y[rand])}')
+        total += 1
+        if result[0] == Y[rand]:
+            n_correct += 1
+    print(f'These samples have accuracy of {n_correct/total}')
+
 
     # evaluation model
-    loss,accuracy = loaded_model.evaluate(X, y_test)
-    print('Accuracy = {:.2f}'.format(accuracy))
+    loss,categorical_accuracy = loaded_model.evaluate(X, y_test)
+    print('Accuracy = {:.2f}'.format(categorical_accuracy))
 
-    return accuracy
+    return categorical_accuracy
+
+def create_plots(is_train):
+    '''
+    From each data sample, create a plot and save it as a jpg.
+    '''
+    X_input, Y_input = load_raw_data(is_train)
+    # create a plot
+    print(Y_input.shape[0])
+    for i in range(0, 50):
+        fig, ax = plt.subplots()
+        plt.plot(X_input[i])
+        # save the plot in appropriate folder for this activity
+        pth = keep_local.dataset_dir_harus_image()
+        pth =  pth / 'training_set' if is_train else pth / 'test_set'
+        activity_folder = get_category(Y_input[i], False)
+        file_name = f'body_acc_x_{i}.jpg'
+        pth = pth / activity_folder / file_name
+        fig.savefig(pth, transparent=False, dpi=80, bbox_inches="tight")
+        plt.close()
 
 if __name__ == '__main__':
     #image_classifier()
     #load_and_test()
     #image_classifier_harus()
     #load_and_test_harus()
-    #load_raw_data()
+    #load_and_process()
     #image_classifier_harus_full()
     load_and_test_harus_full()
+    #create_plots(True)
