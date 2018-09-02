@@ -67,7 +67,7 @@ def image_classifier():
         plt.imshow(random_image)
         plt.show()
 
-    # Stop training if val_acc does not improve after [patience] epochs.
+    # Stop training if val_acc does not improve after [patience] epochs. val_acc is validation accuracy.
     accuracy_callback = [EarlyStopping(monitor='val_acc', patience=5, mode='max')]
 
     classifier.fit_generator(training_set,
@@ -165,6 +165,7 @@ def image_classifier_harus():
     classifier.add(Flatten())
     classifier.add(Dense(units = 32, activation = 'relu'))
     classifier.add(Dense(units = n_classes, activation = 'sigmoid'))
+    # this needs to be categorical loss and metric here.
     classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
     # Stop training if val_acc does not improve after [patience] epochs.
@@ -284,17 +285,17 @@ def image_classifier_harus_full():
     classifier.add(Flatten())
     classifier.add(Dense(units = 32, activation = 'relu'))
     classifier.add(Dense(units = n_classes, activation = 'sigmoid'))
-    classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+    classifier.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = ['categorical_accuracy'])
 
-    # Stop training if val_acc does not improve after [patience] epochs.
-    accuracy_callback = [EarlyStopping(monitor='val_acc', patience=5, mode='max')]
+    # Stop training if accuracy on validation set does not improve after n [patience] epochs.
+    accuracy_callback = [EarlyStopping(monitor='val_categorical_accuracy', patience=5, mode='max')]
 
     classifier.fit(x_train, y_train,
-        steps_per_epoch = 500, # divide the training set in to this many batches. All samples in one batch are run in parallel.
+        steps_per_epoch = 128, # divide the training set in to this many batches. All samples in one batch are run in parallel.
         epochs = 25, # 25,
         callbacks = accuracy_callback,
         validation_data = (x_test, y_test), # some of the training data is used for validation instead.
-        validation_steps = 500)
+        validation_steps = 128)
 
     # save model
     d = datetime.now()
@@ -304,6 +305,7 @@ def image_classifier_harus_full():
         json_file.write(model_json)
 
     classifier.save_weights(f'model_data/image_model_{tag}.h5')
+    print(f'Saved model model_data/image_model_{tag}.')
 
 def get_category(index, is_not_folder = True):
     if index == 0:
@@ -329,18 +331,20 @@ def get_category(index, is_not_folder = True):
 
 def load_and_test_harus_full():
     print('Running load_and_test_harus_full')
-    model_name = 'image_model_2018-09-01_15-56' #'image_model_2018-08-26_18-07'
+    model_name = 'image_model_2018-09-02_14-21' #'image_model_2018-08-26_18-07'
     # load model and compile
     json_file = open(f'model_data/{model_name}.json', 'r')
     json_model = json_file.read()
     json_file.close()
     loaded_model = model_from_json(json_model)
     loaded_model.load_weights(f'model_data/{model_name}.h5')
-    loaded_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['categorical_accuracy'])
+    loaded_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['categorical_accuracy'])
 
     # load  dataset
     n_classes = 6
     is_train = False # load training data or test data
+    msg = 'TRAINING set' if is_train else 'testing set'
+    print(f'Loading {msg}.')
     X, Y = load_and_process(is_train)
     y_test = keras.utils.to_categorical(Y, num_classes=n_classes)
 
@@ -359,12 +363,12 @@ def load_and_test_harus_full():
         total += 1
         if result[0] == Y[rand]:
             n_correct += 1
-    print(f'These samples have accuracy of {n_correct/total}')
+    print(f'These samples have accuracy of {n_correct/total} on the {msg}.')
 
 
     # evaluation model
     loss,categorical_accuracy = loaded_model.evaluate(X, y_test)
-    print('Accuracy = {:.2f}'.format(categorical_accuracy))
+    print(f'Keras calculated accuracy = {categorical_accuracy:.2f}')
 
     return categorical_accuracy
 
@@ -393,6 +397,6 @@ if __name__ == '__main__':
     #image_classifier_harus()
     #load_and_test_harus()
     #load_and_process()
-    #image_classifier_harus_full()
-    load_and_test_harus_full()
-    #create_plots(True)
+    image_classifier_harus_full()
+    #load_and_test_harus_full()
+    #create_plots(False)
