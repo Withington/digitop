@@ -20,7 +20,7 @@ scipy==1.1.0
 setuptools==39.2.0
 six==1.11.0
 tensorboard==1.8.0
-tensorflow==1.8.0
+tensorflow==2.5.1
 termcolor==1.1.0
 Werkzeug==0.14.1
 wheel==0.31.1
