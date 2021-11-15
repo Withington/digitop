@@ -11,7 +11,7 @@ Keras==2.1.6
 Markdown==2.6.11
 matplotlib==2.2.2
 numpy==1.14.3
-pip==10.0.1
+pip==21.1
 protobuf==3.5.2.post1
 pydot==1.2.4
 pyparsing==2.2.0
