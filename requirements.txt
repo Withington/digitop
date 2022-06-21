@@ -10,7 +10,7 @@ html5lib==0.9999999
 Keras==2.1.6
 Markdown==2.6.11
 matplotlib==2.2.2
-numpy==1.14.3
+numpy==1.22.0
 pip==10.0.1
 protobuf==3.5.2.post1
 pydot==1.2.4
